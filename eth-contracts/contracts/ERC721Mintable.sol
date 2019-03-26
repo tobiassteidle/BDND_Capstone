@@ -165,31 +165,38 @@ contract ERC721 is Pausable, ERC165 {
 
     function balanceOf(address owner) public view returns (uint256) {
         // return the token balance of given address
-        return Counters.current(_ownedTokensCount[owner]);
+        require(owner != address(0));
+        return _ownedTokensCount[owner].current();
     }
 
     function ownerOf(uint256 tokenId) public view returns (address) {
         // return the owner of the given tokenId
-        return _tokenOwner[tokenId];
+        address owner = _tokenOwner[tokenId];
+        require(owner != address(0));
+        return owner;
     }
 
 //    @dev Approves another address to transfer the given token ID
     function approve(address to, uint256 tokenId) public {
+        address owner = ownerOf(tokenId);
+
         // require the given address to not be the owner of the tokenId
-        require(to != ownerOf(tokenId), "'to' is the owner of the 'tokenId'");
+        require(to != owner, "'to' is the owner of the 'tokenId'");
 
         // require the msg sender to be the owner of the contract or isApprovedForAll() to be true
-        require(msg.sender == _owner || isApprovedForAll(_owner, msg.sender), "Operation not allowed for sender.");
+        require(msg.sender == owner || isApprovedForAll(_owner, msg.sender), "Operation not allowed for sender.");
 
         // add 'to' address to token approvals
         _tokenApprovals[tokenId] = to;
 
         // emit Approval Event
-        emit Approval(_owner, to, tokenId);
+        emit Approval(owner, to, tokenId);
     }
 
     function getApproved(uint256 tokenId) public view returns (address) {
-        // TODO return token approval if it exists
+        // return token approval if it exists
+        require(_exists(tokenId));
+        return _tokenApprovals[tokenId];
     }
 
     /**
@@ -254,27 +261,37 @@ contract ERC721 is Pausable, ERC165 {
     // @dev Internal function to mint a new token
     // TIP: remember the functions to use for Counters. you can refresh yourself with the link above
     function _mint(address to, uint256 tokenId) internal {
+        // revert if given tokenId already exists or given address is invalid
+        require(to != address(0), "'to' address is invalid");
+        require(!_exists(tokenId), "'tokenId' already exists");
 
-        // TODO revert if given tokenId already exists or given address is invalid
+        // mint tokenId to given address & increase token count of owner
+        _tokenOwner[tokenId] = to;
+        _ownedTokensCount[to].increment();
 
-        // TODO mint tokenId to given address & increase token count of owner
-
-        // TODO emit Transfer event
+        // emit Transfer event
+        emit Transfer(address(0), to, tokenId);
     }
 
     // @dev Internal function to transfer ownership of a given token ID to another address.
     // TIP: remember the functions to use for Counters. you can refresh yourself with the link above
     function _transferFrom(address from, address to, uint256 tokenId) internal {
+        // require from address is the owner of the given token
+        require(ownerOf(tokenId) == from, "'from' is not the owner of given token");
 
-        // TODO: require from address is the owner of the given token
+        // require token is being transfered to valid address
+        require(to != address(0), "'to' address is invalid");
 
-        // TODO: require token is being transfered to valid address
+        // clear approval
+        _clearApproval(tokenId);
 
-        // TODO: clear approval
+        // update token counts & transfer ownership of the token ID
+        _ownedTokensCount[from].decrement();
+        _ownedTokensCount[to].increment();
+        _tokenOwner[tokenId] = to;
 
-        // TODO: update token counts & transfer ownership of the token ID
-
-        // TODO: emit correct event
+        // emit correct event
+        emit Transfer(from, to, tokenId);
     }
 
     /**
@@ -479,9 +496,13 @@ contract ERC721Enumerable is ERC165, ERC721 {
 
 contract ERC721Metadata is ERC721Enumerable, usingOraclize {
 
-    // TODO: Create private vars for token _name, _symbol, and _baseTokenURI (string)
+    // Create private vars for token _name, _symbol, and _baseTokenURI (string)
+    string private _name;
+    string private _symbol;
+    string private _baseTokenURI;
 
-    // TODO: create private mapping of tokenId's to token uri's called '_tokenURIs'
+    // create private mapping of tokenId's to token uri's called '_tokenURIs'
+    mapping(uint256 => string) private _tokenURIs;
 
     bytes4 private constant _INTERFACE_ID_ERC721_METADATA = 0x5b5e139f;
     /*
@@ -493,17 +514,31 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
 
 
     constructor (string memory name, string memory symbol, string memory baseTokenURI) public {
-        // TODO: set instance var values
+        // set instance var values
+        _name = name;
+        _symbol = symbol;
+        _baseTokenURI = baseTokenURI;
 
         _registerInterface(_INTERFACE_ID_ERC721_METADATA);
     }
 
-    // TODO: create external getter functions for name, symbol, and baseTokenURI
+    // create external getter functions for name, symbol, and baseTokenURI
+    function name() external view returns (string memory) {
+        return _name;
+    }
 
-    //function tokenURI(uint256 tokenId) external view returns (string memory) {
-    //    require(_exists(tokenId));
-    //    return _tokenURIs[tokenId];
-    //}
+    function symbol() external view returns (string memory) {
+        return _symbol;
+    }
+
+    function baseTokenURI() external view returns (string memory) {
+        return _baseTokenURI;
+    }
+
+    function tokenURI(uint256 tokenId) external view returns (string memory) {
+        require(_exists(tokenId));
+        return _tokenURIs[tokenId];
+    }
 
 
     // TODO: Create an internal function to set the tokenURI of a specified tokenId
