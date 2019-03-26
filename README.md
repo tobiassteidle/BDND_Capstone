@@ -17,8 +17,15 @@ In directory `eth-contracts/`
 
 To run truffle tests:
 
-In directory `eth-contracts/`  
-`truffle test`
+In directory `eth-contracts/`
+
+For all tests:    
+`truffle test` 
+
+For single file tests:  
+`truffle test test/TestERC721Mintable.js`  
+`truffle test test/TestSquareVerifier.js`  
+`truffle test test/TestSolnSquareVerifier.js`  
 
 ## TODO: Addresses and Links 
 Contract address: `XXX`  
