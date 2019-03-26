@@ -42,15 +42,52 @@ contract Ownable {
     }
 }
 
-contract Pausable {
 
+/**
+ * Hint:
+ * OpenZeppelin has a 'Pausable' implementation (for future use)
+ * https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/lifecycle/Pausable.sol
+ */
+//  Create a Pausable contract that inherits from the Ownable contract
+contract Pausable is Ownable {
+
+    //  1) create a private '_paused' variable of type bool
+    bool private _paused;
+
+    //  2) create an internal constructor that sets the _paused variable to false
+    constructor() internal
+    {
+        _paused = false;
+    }
+
+    //  3) create 'whenNotPaused' & 'paused' modifier that throws in the appropriate situation
+    modifier whenNotPaused()
+    {
+        require(!_paused, "Contract is paused.");
+        _;
+    }
+
+    modifier paused()
+    {
+        require(_paused, "Contract is not paused.");
+        _;
+    }
+
+    //  4) create a Paused & Unpaused event that emits the address that triggered the event
+    event Paused(address account);
+    event Unpaused(address account);
+
+    function pause() public onlyOwner whenNotPaused {
+        _paused = true;
+        emit Paused(msg.sender);
+    }
+
+    function unpause() public onlyOwner paused {
+        _paused = false;
+        emit Unpaused(msg.sender);
+    }
 }
 
-//  TODO's: Create a Pausable contract that inherits from the Ownable contract
-//  1) create a private '_paused' variable of type bool
-//  2) create an internal constructor that sets the _paused variable to false
-//  3) create 'whenNotPaused' & 'paused' modifier that throws in the appropriate situation
-//  4) create a Paused & Unpaused event that emits the address that triggered the event
 
 contract ERC165 {
     bytes4 private constant _INTERFACE_ID_ERC165 = 0x01ffc9a7;
@@ -127,25 +164,28 @@ contract ERC721 is Pausable, ERC165 {
     }
 
     function balanceOf(address owner) public view returns (uint256) {
-        // TODO return the token balance of given address
-        // TIP: remember the functions to use for Counters. you can refresh yourself with the link above
+        // return the token balance of given address
+        return Counters.current(_ownedTokensCount[owner]);
     }
 
     function ownerOf(uint256 tokenId) public view returns (address) {
-        // TODO return the owner of the given tokenId
+        // return the owner of the given tokenId
+        return _tokenOwner[tokenId];
     }
 
 //    @dev Approves another address to transfer the given token ID
     function approve(address to, uint256 tokenId) public {
+        // require the given address to not be the owner of the tokenId
+        require(to != ownerOf(tokenId), "'to' is the owner of the 'tokenId'");
 
-        // TODO require the given address to not be the owner of the tokenId
+        // require the msg sender to be the owner of the contract or isApprovedForAll() to be true
+        require(msg.sender == _owner || isApprovedForAll(_owner, msg.sender), "Operation not allowed for sender.");
 
-        // TODO require the msg sender to be the owner of the contract or isApprovedForAll() to be true
+        // add 'to' address to token approvals
+        _tokenApprovals[tokenId] = to;
 
-        // TODO add 'to' address to token approvals
-
-        // TODO emit Approval Event
-
+        // emit Approval Event
+        emit Approval(_owner, to, tokenId);
     }
 
     function getApproved(uint256 tokenId) public view returns (address) {
