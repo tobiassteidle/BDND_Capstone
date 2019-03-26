@@ -1,6 +1,30 @@
-# Udacity Blockchain Capstone
+# Udacity Blockchain Capstone "Real Estate Marketplace"
 
-The capstone will build upon the knowledge you have gained in the course in order to build a decentralized housing product. 
+Real Estate Marketplace is the capstone project for Udacity's Blockchain course. 
+
+## Install
+
+This repository contains Smart Contract code in Solidity (using Truffle), tests (also using Truffle)
+
+To install, download or clone the repo, then:
+
+`npm install`
+
+In directory `eth-contracts/`  
+`truffle compile`
+
+## Tests
+
+To run truffle tests:
+
+In directory `eth-contracts/`  
+`truffle test`
+
+## TODO: Addresses and Links 
+Contract address: `XXX`  
+Contract Abi's: `XXX`  
+OpenSea Marketplace Storefront link's: `XXX`  
+
 
 # Project Resources
 
