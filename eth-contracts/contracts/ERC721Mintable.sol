@@ -540,24 +540,39 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
         return _tokenURIs[tokenId];
     }
 
+    // Create an internal function to set the tokenURI of a specified tokenId
+    function _setTokenURI(uint256 tokenId) internal {
+        // require the token exists before setting
+        require(_exists(tokenId), "'tokenId' not exist");
 
-    // TODO: Create an internal function to set the tokenURI of a specified tokenId
-    // It should be the _baseToeknURI + the tokenId in string form
-    // TIP #1: use strConcat() from the imported oraclizeAPI lib to set the complete token URI
-    // TIP #2: you can also use uint2str() to convert a uint to a string
+        // It should be the _baseToeknURI + the tokenId in string form
+        // TIP #1: use strConcat() from the imported oraclizeAPI lib to set the complete token URI
+        // TIP #2: you can also use uint2str() to convert a uint to a string
         // see https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI_0.5.sol for strConcat()
-    // require the token exists before setting
-
+        _tokenURIs[tokenId] = strConcat(_baseTokenURI, uint2str(tokenId));
+    }
 }
 
-//  TODO's: Create CustomERC721Token contract that inherits from the ERC721Metadata contract. You can name this contract as you please
+// Create CustomERC721Token contract that inherits from the ERC721Metadata contract. You can name this contract as you please
+// REst = Real Estate
 //  1) Pass in appropriate values for the inherited ERC721Metadata contract
 //      - make the base token uri: https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/
-//  2) create a public mint() that does the following:
-//      -can only be executed by the contract owner
-//      -takes in a 'to' address, tokenId, and tokenURI as parameters
-//      -returns a true boolean upon completion of the function
-//      -calls the superclass mint and setTokenURI functions
+contract REstXERC721Token is ERC721Metadata("Real Estate Exchange", "REstX", "https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/") {
+
+    //  2) create a public mint() that does the following:
+    //      -can only be executed by the contract owner
+    //      -takes in a 'to' address, tokenId, and tokenURI as parameters
+
+    //      -returns a true boolean upon completion of the function
+    //      -calls the superclass mint and setTokenURI functions
+    function mint(address to, uint256 tokenId, string memory tokenURI) public onlyOwner returns (bool) {
+        super._mint(to, tokenId);
+        super._setTokenURI(tokenId);
+        return true;
+    }
+}
+
+
 
 
 
