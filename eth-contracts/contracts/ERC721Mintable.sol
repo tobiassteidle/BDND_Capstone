@@ -7,18 +7,43 @@ import 'openzeppelin-solidity/contracts/token/ERC721/IERC721Receiver.sol';
 import "./Oraclize.sol";
 
 contract Ownable {
-    //  TODO's
     //  1) create a private '_owner' variable of type address with a public getter function
-    //  2) create an internal constructor that sets the _owner var to the creater of the contract 
-    //  3) create an 'onlyOwner' modifer that throws if called by any account other than the owner.
-    //  4) fill out the transferOwnership function
-    //  5) create an event that emits anytime ownerShip is transfered (including in the constructor)
+    address public _owner;
 
-    function transferOwnership(address newOwner) public onlyOwner {
-        // TODO add functionality to transfer control of the contract to a newOwner.
-        // make sure the new owner is a real address
+    //  2) create an internal constructor that sets the _owner var to the creater of the contract
+    constructor() internal
+    {
+        _owner = msg.sender;
 
+        // emit ownerShip transfer event
+        emit OwnershipTransfered(msg.sender);
     }
+
+    //  3) create an 'onlyOwner' modifer that throws if called by any account other than the owner.
+    modifier onlyOwner()
+    {
+        require(msg.sender == _owner, "Caller is not contract owner");
+        _;
+    }
+
+    //  5) create an event that emits anytime ownerShip is transfered (including in the constructor)
+    event OwnershipTransfered(address newOwner);
+
+    //  4) fill out the transferOwnership function
+    function transferOwnership(address newOwner) public onlyOwner {
+        // make sure the new owner is a real address
+        require(!Address.isContract(newOwner), "Owner must be a real address");
+
+        // set new owner
+        _owner = newOwner;
+
+        // emit ownerShip transfer event
+        emit OwnershipTransfered(newOwner);
+    }
+}
+
+contract Pausable {
+
 }
 
 //  TODO's: Create a Pausable contract that inherits from the Ownable contract
@@ -70,7 +95,7 @@ contract ERC721 is Pausable, ERC165 {
     event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
 
     event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
-    
+
     using SafeMath for uint256;
     using Address for address;
     using Counters for Counters.Counter;
@@ -112,7 +137,7 @@ contract ERC721 is Pausable, ERC165 {
 
 //    @dev Approves another address to transfer the given token ID
     function approve(address to, uint256 tokenId) public {
-        
+
         // TODO require the given address to not be the owner of the tokenId
 
         // TODO require the msg sender to be the owner of the contract or isApprovedForAll() to be true
@@ -191,7 +216,7 @@ contract ERC721 is Pausable, ERC165 {
     function _mint(address to, uint256 tokenId) internal {
 
         // TODO revert if given tokenId already exists or given address is invalid
-  
+
         // TODO mint tokenId to given address & increase token count of owner
 
         // TODO emit Transfer event
@@ -204,10 +229,10 @@ contract ERC721 is Pausable, ERC165 {
         // TODO: require from address is the owner of the given token
 
         // TODO: require token is being transfered to valid address
-        
+
         // TODO: clear approval
 
-        // TODO: update token counts & transfer ownership of the token ID 
+        // TODO: update token counts & transfer ownership of the token ID
 
         // TODO: emit correct event
     }
@@ -413,7 +438,7 @@ contract ERC721Enumerable is ERC165, ERC721 {
 }
 
 contract ERC721Metadata is ERC721Enumerable, usingOraclize {
-    
+
     // TODO: Create private vars for token _name, _symbol, and _baseTokenURI (string)
 
     // TODO: create private mapping of tokenId's to token uri's called '_tokenURIs'
@@ -435,10 +460,10 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
 
     // TODO: create external getter functions for name, symbol, and baseTokenURI
 
-    function tokenURI(uint256 tokenId) external view returns (string memory) {
-        require(_exists(tokenId));
-        return _tokenURIs[tokenId];
-    }
+    //function tokenURI(uint256 tokenId) external view returns (string memory) {
+    //    require(_exists(tokenId));
+    //    return _tokenURIs[tokenId];
+    //}
 
 
     // TODO: Create an internal function to set the tokenURI of a specified tokenId
