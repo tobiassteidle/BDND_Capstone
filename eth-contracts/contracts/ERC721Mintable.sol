@@ -565,7 +565,7 @@ contract REstXERC721Token is ERC721Metadata("Real Estate Exchange", "REstX", "ht
 
     //      -returns a true boolean upon completion of the function
     //      -calls the superclass mint and setTokenURI functions
-    function mint(address to, uint256 tokenId, string memory tokenURI) public onlyOwner returns (bool) {
+    function mint(address to, uint256 tokenId) public onlyOwner returns (bool) {
         super._mint(to, tokenId);
         super._setTokenURI(tokenId);
         return true;
