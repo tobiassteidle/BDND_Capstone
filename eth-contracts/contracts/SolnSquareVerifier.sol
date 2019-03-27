@@ -1,5 +1,6 @@
 pragma solidity >=0.4.21 <0.6.0;
 
+import 'openzeppelin-solidity/contracts/utils/Address.sol';
 import './ERC721Mintable.sol';
 import "./Verifier.sol";
 
@@ -7,52 +8,81 @@ import "./Verifier.sol";
 contract SquareVerifier is Verifier {
 }
 
-// TODO define another contract named SolnSquareVerifier that inherits from your ERC721Mintable class
+// define another contract named SolnSquareVerifier that inherits from your ERC721Mintable class
 contract SolnSquareVerifier is REstXERC721Token {
 
-    // TODO define a solutions struct that can hold an index & an address
+    // define a solutions struct that can hold an index & an address
     struct Solutions {
-        uint256 index;
-        address from;
+        uint256 tokenId;
+        address to;
     }
 
-    // define an array of the above struct
-    Solutions [] private solutions;
+    // define a mapping to store unique solutions submitted
+    mapping(bytes32 => Solutions) private solutions;
 
-    // TODO define a mapping to store unique solutions submitted
+    // Create an event to emit when a solution is added
+    event SolutionAdded(address to, uint256 index);
 
+    // Create a function to add the solutions to the array and emit the event
+    function _addSolutions(bytes32 key, address to, uint256 tokenId) internal {
 
+        // check if solution already used
+        require(solutions[key].to == address(0), "solution already used, try another one");
 
-// TODO Create an event to emit when a solution is added
-    event SolutionAdded(uint256 indexed index, address indexed from);
+        // store solution to prevent reuse
+        solutions[key].to = msg.sender;
+        solutions[key].tokenId = tokenId;
 
+        // emit SolutionAdded event
+        emit SolutionAdded(to, tokenId);
+    }
 
+    event VerifierChanged(address newVerifier);
 
-// TODO Create a function to add the solutions to the array and emit the event
-
-    SquareVerifier public verifier;
+    SquareVerifier public _verifier;
 
     constructor (address verifier_address) public {
-        verifier = SquareVerifier(verifier_address);
+        _verifier = SquareVerifier(verifier_address);
     }
 
+    function setVerifier(address verifier_address) public onlyOwner {
+        // make sure the new verifier is a contract
+        require(Address.isContract(verifier_address), "Owner must be a contract address");
 
-// TODO Create a function to mint new NFT only after the solution has been verified
-//  - make sure the solution is unique (has not been used before)
-//  - make sure you handle metadata as well as tokenSuplly
-    function mintUniqueTokenTo(address to, uint256 tokenId) public {
+        // set new verifier
+        _verifier = verifier_address;
+
+        // emit verifier changed event
+        emit VerifierChanged(verifier_address);
+    }
+
+    // Create a function to mint new NFT only after the solution has been verified
+    function mintUniqueTokenTo(
+        address to,
+        uint256 tokenId,
+        uint[2] memory a,
+        uint[2] memory a_p,
+        uint[2][2] memory b,
+        uint[2] memory b_p,
+        uint[2] memory c,
+        uint[2] memory c_p,
+        uint[2] memory h,
+        uint[2] memory k,
+        uint[2] memory input) public {
+
+        // check if solution is valid
+        require(_verifier.verifyTx(a, a_p, b, b_p, c, c_p, h, k, input), "invalid solution");
+
+        // hash solution key and check if is valid
+        bytes32 key = keccak256(abi.encodePacked(a, a_p, b, b_p, c, c_p, h, k, input));
+
+        // add solution to mapping
+        _addSolutions(key, to, tokenId);
+
+        // mint it
         super.mint(to, tokenId);
     }
 }
-
-
-
-
-
-
-
-
-
 
 
 

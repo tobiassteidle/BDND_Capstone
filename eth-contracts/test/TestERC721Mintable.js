@@ -1,6 +1,14 @@
 var SquareVerifier = artifacts.require('SquareVerifier');
 var ERC721MintableComplete = artifacts.require('SolnSquareVerifier');
 
+const proof_1 = require('./data/proof');
+const proof_2 = require('./data/proof_2');
+const proof_3 = require('./data/proof_3');
+const proof_4 = require('./data/proof_4');
+const proof_5 = require('./data/proof_5');
+const proof_6 = require('./data/proof_6');
+const proof_7 = require('./data/proof_7');
+
 contract('TestERC721Mintable', accounts => {
 
     const account_one = accounts[0];
@@ -22,7 +30,7 @@ contract('TestERC721Mintable', accounts => {
 
           // try to mint from account_two
           try {
-            await this.contract.mintUniqueTokenTo(account_two, 0, {from: account_two});
+            await this.contract.mintUniqueTokenTo(account_two, 0, proof_1.proof.A, proof_1.proof.A_p, proof_1.proof.B, proof_1.proof.B_p, proof_1.proof.C, proof_1.proof.C_p, proof_1.proof.H, proof_1.proof.K, proof_1.input, {from: account_two});
           } catch (e) {
             exeeption_catched = true;
             exception_message = e.message;
@@ -75,7 +83,7 @@ contract('TestERC721Mintable', accounts => {
         const square_verifier = await SquareVerifier.new({from: account_one});
         this.contract = await ERC721MintableComplete.new(square_verifier.address, {from: account_one});
 
-        await this.contract.mintUniqueTokenTo(account_two, 0, {from: account_one});
+        await this.contract.mintUniqueTokenTo(account_two, 0, proof_2.proof.A, proof_2.proof.A_p, proof_2.proof.B, proof_2.proof.B_p, proof_2.proof.C, proof_2.proof.C_p, proof_2.proof.H, proof_2.proof.K, proof_2.input, {from: account_one});
       });
 
       it('check approve for single token', async function () {
@@ -121,11 +129,11 @@ contract('TestERC721Mintable', accounts => {
         this.contract = await ERC721MintableComplete.new(square_verifier.address, {from: account_one});
 
         // mint multiple tokens
-        await this.contract.mintUniqueTokenTo(account_two, 0, {from: account_one});
-        await this.contract.mintUniqueTokenTo(account_three, 1, {from: account_one});
-        await this.contract.mintUniqueTokenTo(account_four, 2, {from: account_one});
-        await this.contract.mintUniqueTokenTo(account_five, 3, {from: account_one});
-        await this.contract.mintUniqueTokenTo(account_six, 4, {from: account_one});
+        await this.contract.mintUniqueTokenTo(account_two, 0, proof_3.proof.A, proof_3.proof.A_p, proof_3.proof.B, proof_3.proof.B_p, proof_3.proof.C, proof_3.proof.C_p, proof_3.proof.H, proof_3.proof.K, proof_3.input, {from: account_one});
+        await this.contract.mintUniqueTokenTo(account_three, 1, proof_4.proof.A, proof_4.proof.A_p, proof_4.proof.B, proof_4.proof.B_p, proof_4.proof.C, proof_4.proof.C_p, proof_4.proof.H, proof_4.proof.K, proof_4.input, {from: account_one});
+        await this.contract.mintUniqueTokenTo(account_four, 2, proof_5.proof.A, proof_5.proof.A_p, proof_5.proof.B, proof_5.proof.B_p, proof_5.proof.C, proof_5.proof.C_p, proof_5.proof.H, proof_5.proof.K, proof_5.input,{from: account_one});
+        await this.contract.mintUniqueTokenTo(account_five, 3, proof_6.proof.A, proof_6.proof.A_p, proof_6.proof.B, proof_6.proof.B_p, proof_6.proof.C, proof_6.proof.C_p, proof_6.proof.H, proof_6.proof.K, proof_6.input,{from: account_one});
+        await this.contract.mintUniqueTokenTo(account_six, 4, proof_7.proof.A, proof_7.proof.A_p, proof_7.proof.B, proof_7.proof.B_p, proof_7.proof.C, proof_7.proof.C_p, proof_7.proof.H, proof_7.proof.K, proof_7.input,{from: account_one});
       });
 
       it('should return total supply', async function () {

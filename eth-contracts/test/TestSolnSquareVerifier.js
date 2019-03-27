@@ -1,4 +1,4 @@
-const valid_proof = require('./proof');
+const valid_proof = require('./data/proof');
 const proof = valid_proof.proof;
 const input = valid_proof.input;
 
@@ -8,6 +8,8 @@ var SolnSquareVerifier = artifacts.require('SolnSquareVerifier');
 contract('SolnSquareVerifier', accounts => {
 
   const account_one = accounts[0];
+  const account_two = accounts[1];
+  const account_three = accounts[2];
 
   describe('check approvals', function () {
     beforeEach(async function () {
@@ -18,11 +20,28 @@ contract('SolnSquareVerifier', accounts => {
     // Test if a new solution can be added for contract - SolnSquareVerifier
     it('new solution can be added for contract ', async function () {
 
+
     });
 
     // Test if an ERC721 token can be minted for contract - SolnSquareVerifier
     it('ERC721 token can be minted for contract', async function () {
+      await this.contract.mintUniqueTokenTo(account_two, 0, proof.A, proof.A_p, proof.B, proof.B_p, proof.C, proof.C_p, proof.H, proof.K, input, {from: account_one});
 
+
+
+    });
+
+    it('should fail to mint a token with the same solution', async function () {
+      let exeeption_catched = false;
+      let exception_message = "";
+      try {
+        await this.contract.mintUniqueTokenTo(account_three, 1, proof.A, proof.A_p, proof.B, proof.B_p, proof.C, proof.C_p, proof.H, proof.K, input, {from: account_one});
+      } catch (e) {
+        exeeption_catched = true;
+        exception_message = e.message;
+      }
+      assert.equal(exeeption_catched, true, "exception should be thrown");
+      assert.equal(exception_message, "Returned error: VM Exception while processing transaction: revert Caller is not contract owner -- Reason given: Caller is not contract owner.", "unexcpected error message");
     });
 
   });
