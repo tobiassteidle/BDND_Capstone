@@ -12,26 +12,24 @@ contract SquareVerifier is Verifier {
 contract SolnSquareVerifier is REstXERC721Token {
 
     // define a solutions struct that can hold an index & an address
-    struct Solutions {
+    struct Solution {
         uint256 tokenId;
         address to;
     }
 
     // define a mapping to store unique solutions submitted
-    mapping(bytes32 => Solutions) private solutions;
+    mapping(bytes32 => Solution) private solutions;
 
     // Create an event to emit when a solution is added
     event SolutionAdded(address to, uint256 index);
 
     // Create a function to add the solutions to the array and emit the event
-    function _addSolutions(bytes32 key, address to, uint256 tokenId) internal {
-
-        // check if solution already used
-        require(solutions[key].to == address(0), "solution already used, try another one");
+    function _addSolution(bytes32 key, address to, uint256 tokenId) internal {
+        Solution storage solution = solutions[key];
 
         // store solution to prevent reuse
-        solutions[key].to = msg.sender;
-        solutions[key].tokenId = tokenId;
+        solution.to = msg.sender;
+        solution.tokenId = tokenId;
 
         // emit SolutionAdded event
         emit SolutionAdded(to, tokenId);
@@ -50,7 +48,7 @@ contract SolnSquareVerifier is REstXERC721Token {
         require(Address.isContract(verifier_address), "Owner must be a contract address");
 
         // set new verifier
-        _verifier = verifier_address;
+        _verifier = SquareVerifier(verifier_address);
 
         // emit verifier changed event
         emit VerifierChanged(verifier_address);
@@ -69,15 +67,17 @@ contract SolnSquareVerifier is REstXERC721Token {
         uint[2] memory h,
         uint[2] memory k,
         uint[2] memory input) public {
-
         // check if solution is valid
         require(_verifier.verifyTx(a, a_p, b, b_p, c, c_p, h, k, input), "invalid solution");
 
         // hash solution key and check if is valid
         bytes32 key = keccak256(abi.encodePacked(a, a_p, b, b_p, c, c_p, h, k, input));
 
+        // check if solution already used
+        require(solutions[key].to == address(0), "solution already used, try another one");
+
         // add solution to mapping
-        _addSolutions(key, to, tokenId);
+        _addSolution(key, to, tokenId);
 
         // mint it
         super.mint(to, tokenId);

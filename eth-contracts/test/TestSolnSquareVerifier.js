@@ -17,31 +17,27 @@ contract('SolnSquareVerifier', accounts => {
       this.contract = await SolnSquareVerifier.new(square_verifier.address, {from: account_one});
     });
 
-    // Test if a new solution can be added for contract - SolnSquareVerifier
-    it('new solution can be added for contract ', async function () {
-
-
-    });
-
     // Test if an ERC721 token can be minted for contract - SolnSquareVerifier
     it('ERC721 token can be minted for contract', async function () {
       await this.contract.mintUniqueTokenTo(account_two, 0, proof.A, proof.A_p, proof.B, proof.B_p, proof.C, proof.C_p, proof.H, proof.K, input, {from: account_one});
-
-
-
     });
 
     it('should fail to mint a token with the same solution', async function () {
       let exeeption_catched = false;
       let exception_message = "";
+
+      // Try solution for the first time
+      await this.contract.mintUniqueTokenTo(account_two, 0, proof.A, proof.A_p, proof.B, proof.B_p, proof.C, proof.C_p, proof.H, proof.K, input, {from: account_one});
+
       try {
+        // try same solution again
         await this.contract.mintUniqueTokenTo(account_three, 1, proof.A, proof.A_p, proof.B, proof.B_p, proof.C, proof.C_p, proof.H, proof.K, input, {from: account_one});
       } catch (e) {
         exeeption_catched = true;
         exception_message = e.message;
       }
       assert.equal(exeeption_catched, true, "exception should be thrown");
-      assert.equal(exception_message, "Returned error: VM Exception while processing transaction: revert Caller is not contract owner -- Reason given: Caller is not contract owner.", "unexcpected error message");
+      assert.equal(exception_message, "Returned error: VM Exception while processing transaction: revert solution already used, try another one -- Reason given: solution already used, try another one.");
     });
 
   });
