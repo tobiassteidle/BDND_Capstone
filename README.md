@@ -29,10 +29,9 @@ For single file tests:
 `truffle test test/TestSquareVerifier.js`  
 `truffle test test/TestSolnSquareVerifier.js`  
 
-## TODO: Addresses and Links 
+## Addresses and Links 
 Contract address (Token) : [0x84BB0216c801a6861586c1D04378B20d7CC399b2](https://rinkeby.etherscan.io/address/0x84bb0216c801a6861586c1d04378b20d7cc399b2)  
 Contract address (Verifier): [0xD45DDbccAE45e55a02E1b411B8a61a4cB94284Ca](https://rinkeby.etherscan.io/address/0xd45ddbccae45e55a02e1b411b8a61a4cb94284ca)  
-Contract Abi's: `XXX`  
 OpenSea Marketplace Storefront link's: [Real Estate Exchange](https://rinkeby.opensea.io/category/realestateexchange)
 
 ## ZoKrates (generate zk-Snarks Validator)
