@@ -30,10 +30,10 @@ For single file tests:
 `truffle test test/TestSolnSquareVerifier.js`  
 
 ## TODO: Addresses and Links 
-Contract address (Token) : `XXX`  
-Contract address (Verifier):  
+Contract address (Token) : [0x84BB0216c801a6861586c1D04378B20d7CC399b2](https://rinkeby.etherscan.io/address/0x84bb0216c801a6861586c1d04378b20d7cc399b2)  
+Contract address (Verifier): [0xD45DDbccAE45e55a02E1b411B8a61a4cB94284Ca](https://rinkeby.etherscan.io/address/0xd45ddbccae45e55a02e1b411b8a61a4cb94284ca)  
 Contract Abi's: `XXX`  
-OpenSea Marketplace Storefront link's: `XXX`  
+OpenSea Marketplace Storefront link's: [Real Estate Exchange](https://rinkeby.opensea.io/category/realestateexchange)
 
 ## ZoKrates (generate zk-Snarks Validator)
 #### Step 1: Run ZoKrates in Docker
@@ -71,12 +71,36 @@ cd code/zokrates/code/square/
 ../../../../zokrates export-verifier
 ```
 
-# Deploy to rinkeby
-Update <**your metamask seed**>, <**your infura key**> and <**your contract owner address**> in 
+# Deploy to Rinkeby
+Update <**your infura key**> and <**your contract owner address**> in 
 `/eth-contracts/truffle-config.js` before migrate to Rinkeby Network. 
+And create a `.secret` file in `/eth-contracts/` with your mnemonic.
+
+Example `.secret` content:
+```
+make soup average fence better canvas house like mystery happy holiday
+``` 
+ 
+Start deployment
 ```
 truffle migrate --network rinkeby
 ```
+
+#Minting tokens
+After deploying to the Rinkeby network, there will be a contract on Rinkeby that will be viewable on Rinkeby Etherscan. For example, here is a recently deployed contract. You should set this contract address and the address of your Metamask account as environment variables when running the minting script:
+
+```
+export MNEMONIC="<mnemonic>"
+export INFURA_KEY="<infura_key>"
+export OWNER_ADDRESS="<owner_address>"
+export CONTRACT_ADDRESS="<deployed_contract_address>"
+export NETWORK="rinkeby"
+
+node scripts/mint.js
+```
+
+The output of the `mint.js` script should look like this.
+![mint](assets/mint.png)
 
 # Project Resources
 
