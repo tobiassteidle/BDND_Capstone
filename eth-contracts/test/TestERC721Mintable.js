@@ -1,3 +1,4 @@
+var SquareVerifier = artifacts.require('SquareVerifier');
 var ERC721MintableComplete = artifacts.require('SolnSquareVerifier');
 
 contract('TestERC721Mintable', accounts => {
@@ -11,7 +12,8 @@ contract('TestERC721Mintable', accounts => {
 
     describe('have ownership properties', function () {
         beforeEach(async function () {
-            this.contract = await ERC721MintableComplete.new({from: account_one});
+            const square_verifier = await SquareVerifier.new({from: account_one});
+            this.contract = await ERC721MintableComplete.new(square_verifier.address, {from: account_one});
         });
 
         it('should fail when minting when address is not contract owner', async function () {
@@ -70,7 +72,8 @@ contract('TestERC721Mintable', accounts => {
 
     describe('check approvals', function () {
       beforeEach(async function () {
-        this.contract = await ERC721MintableComplete.new({from: account_one});
+        const square_verifier = await SquareVerifier.new({from: account_one});
+        this.contract = await ERC721MintableComplete.new(square_verifier.address, {from: account_one});
 
         await this.contract.mintUniqueTokenTo(account_two, 0, {from: account_one});
       });
@@ -114,14 +117,15 @@ contract('TestERC721Mintable', accounts => {
 
     describe('match erc721 spec', function () {
       beforeEach(async function () {
-          this.contract = await ERC721MintableComplete.new({from: account_one});
+        const square_verifier = await SquareVerifier.new({from: account_one});
+        this.contract = await ERC721MintableComplete.new(square_verifier.address, {from: account_one});
 
-          // mint multiple tokens
-          await this.contract.mintUniqueTokenTo(account_two, 0, {from: account_one});
-          await this.contract.mintUniqueTokenTo(account_three, 1, {from: account_one});
-          await this.contract.mintUniqueTokenTo(account_four, 2, {from: account_one});
-          await this.contract.mintUniqueTokenTo(account_five, 3, {from: account_one});
-          await this.contract.mintUniqueTokenTo(account_six, 4, {from: account_one});
+        // mint multiple tokens
+        await this.contract.mintUniqueTokenTo(account_two, 0, {from: account_one});
+        await this.contract.mintUniqueTokenTo(account_three, 1, {from: account_one});
+        await this.contract.mintUniqueTokenTo(account_four, 2, {from: account_one});
+        await this.contract.mintUniqueTokenTo(account_five, 3, {from: account_one});
+        await this.contract.mintUniqueTokenTo(account_six, 4, {from: account_one});
       });
 
       it('should return total supply', async function () {
