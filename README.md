@@ -111,3 +111,16 @@ The output of the `mint.js` script should look like this.
 * [Interactive zero knowledge 3-colorability demonstration](http://web.mit.edu/~ezyang/Public/graph/svg.html)
 * [Docker](https://docs.docker.com/install/)
 * [ZoKrates](https://github.com/Zokrates/ZoKrates)
+
+# Known Bugs / Improvements
+Roots and squares as input to ZoKrates is not directly related to the real estate property use case. 
+It is just meant to show how the process can be done programmatically. 
+There might be other data that can be input to ZoKrates to verify land titles.
+
+The metadata API from AWS provided seem to have formatting errors. 
+You may want to study the metadata format presented [here](https://docs.opensea.io/docs/2-adding-metadata) and generate your own API via Heroku with [this guide](https://github.com/ProjectOpenSea/metadata-api-nodejs). 
+From there, you can modify the names and images per token. 
+Just deploy a new contract with a different base tokenURI to access your API.
+
+
+
