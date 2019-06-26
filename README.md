@@ -2,6 +2,8 @@
 
 Real Estate Marketplace is the capstone project for Udacity's Blockchain course. 
 
+![Blockchain Developer Nanodagree](assets/Zertifikat.png)
+
 ## Install
 
 This repository contains Smart Contract code in Solidity (using Truffle), tests (also using Truffle)
